@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>登录页面</title>
+  <script src="jQuery.min.js"></script>
+  <script>
+    $(function () {
+      $("#btnLogin").click(function () {
+        var url = " http://192.168.1.105:1337/user/login?id="
+          + $('#uName').val()
+          + '&pwd=' + $('#uPwd').val();
+        $.ajax({
+          url: url,
+          success: function (data) {
+            if (data == "1")
+              window.location.href = "VUE增删改查.html";
+            else
+              alert(data);
+          }
+        });
+      });
+    });
+  </script>
+</head>
+
+<body>
+  用户名:
+  <input type="text" id="uName"><br />
+  密&nbsp;&nbsp;码:
+  <input type="password" id="uPwd"><br />
+  <input type="button" value="Login" id="btnLogin">
+</body>
+
+</html>

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>vue增删改查</title>
+	<link rel="stylesheet" href="vueExample.css">
+	<style>
+		.del-transition{
+			transition:all 0.3s ease;
+			transform:translateX(0);
+		}
+		.del-enter,.del-leave{
+			transform:translateX(-100%);
+		}
+		.page{list-style:none;
+			margin-top:10px;
+			margin-bottom:10px;}
+		.page>li{
+			display:inline-block;
+			padding:2px 5px;
+			text-decoration: underline;
+			margin-left:3px;
+			cursor:pointer;
+
+		}
+		.page>li:hover{background-color:#ccc;}
+		.page>li.active{background-color:#0090d3;color:white;}
+	</style>
+</head>
+<body>
+	<div id='app'>
+		<grid :people="people" :columns="columns"></grid>
+	</div>
+	<!-- 父组件模板 -->
+	<template id="grid-template">
+		<page :total="people.length"></page>
+		<table>
+			<thead>
+				<tr>
+					<th v-for="col in columns">
+						{{col.name|capitalize}}
+					</th>
+					<th>Delete</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr v-for="p in people" transition="del">
+					<td v-for="col in columns">
+						<a v-if="col.name==this.keyColumn" href="javascript:void(0)" @click="openEditDialog(p[col.name])">
+							{{p[col.name]}}
+						</a>
+						<span v-else>{{p[col.name]}}</span>
+					</td>
+					<td class="text-center">
+						<button @click='del(p[this.keyColumn])'>Delete</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<button @click="openEditDialog()">Create</button>
+		
+		<edit :item="item" :title="title" :mode="mode" :columns="columns" @edit-complete="save"></edit>
+	</template>
+	<!-- 子组件模板 -->
+	<template id="edit-template">
+		<div class='dialogs'>
+			<div class="dialog" :class="{'dialog-active':isShow}">
+				<div class="dialog-content">
+					<header class="dialog-header">
+						<h1 class="dialog-title">{{title}}</h1>
+					</header>
+					<div class="dialog-body">
+						<div class="form-group" v-for="col in columns">
+							<label>{{col.name}}</label>
+							<select v-if="col.dataSource" v-model="item[col.name]"  :disabled="(!mode)&&col.isKey">
+								<option v-for="opt in col.dataSource" :value="opt">
+									{{opt}}
+								</option>
+							</select>
+							<input v-else type="text" v-model="item[col.name]" :disabled="(!mode)&&col.isKey">
+						</div>
+					</div>
+					<footer class="dialog-footer">
+						<div class="form-group">
+							<button class="btn-save" @click="save">Save</button>
+							<button class="btn-close" @click="closeDialog">Close</button>
+						</div>
+					</footer>
+				</div>
+			</div>
+			<div class='dialog-overlay'></div>
+		</div>
+	</template>
+	<!-- 分页组件模板 -->
+	<template id='page-template'>
+		<ul class='page'>
+			<li @click="this.curIndex=1">&lt;&lt;</li>
+			<li @click="this.curIndex--">&lt;</li>
+			<li v-for="i in pages" :class="{'active':(i+1)==this.curIndex}" @click="this.curIndex=i+1">{{i+1}}</li>
+			<li @click="this.curIndex++" :disabled="curIndex==pages">&gt;</li>
+			<li @click="this.curIndex=this.pages">&gt;&gt;</li>
+		</ul>
+	</template>
+	<script src="vue.js"></script>
+	<script src="jQuery.min.js"></script>
+	<script src='vueExample.js'></script>
+</body>
+</html>
